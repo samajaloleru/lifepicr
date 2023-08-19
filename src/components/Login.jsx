@@ -1,33 +1,59 @@
-import React from 'react'
-import GoogleLogin from 'react-google-login';
+import React, { useState, useEffect } from 'react'
+import { useGoogleLogin } from '@react-oauth/google';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { FcGoogle } from 'react-icons/fc';
-import shareVideo from '../assets/share.mp4';
-import logo from '../assets/logowhite.png';
 
-import {config} from '../utils/config';
-import {client} from '../utils/client';
+import { client } from '../utils/client';
+
+import shareVideo from '../assets/share.mp4';
+import logo from '../assets/logo.png';
+	
 
 const Login = () => {
+  const [ user, setUser ] = useState(null);
+  const [ profile, setProfile ] = useState(null);
   const navigate = useNavigate();
 
-  const responseGoogle = (response) => {
-    localStorage.setItem('user', JSON.stringify(response.profileObj));
+  const login = useGoogleLogin({
+    onSuccess: (response) => setUser(response),
+    onError: (error) => console.log('Login Failed:', error)
+  });
 
-    const { name, googleId, imageUrl } = response.profileObj;
-    
-    // create user doc object
-    const doc = {
-      _id: googleId,
-      _type: 'user',
-      userName: name,
-      image: imageUrl,
-    }
-    client.createIfNotExists(doc)
-      .then(() => {
-        navigate('/', { replace: true })
-      })
-  }
+  useEffect(
+    () => {
+      if (user) {
+        axios
+        .get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${user.access_token}`, {
+            headers: {
+                Authorization: `Bearer ${user.access_token}`,
+                Accept: 'application/json'
+            }
+        })
+        .then((res) => {
+          setProfile(res.data);
+          localStorage.setItem('user', JSON.stringify(profile));
+  
+          const { name, id, picture } = profile;
+          
+          // create user doc object
+          const doc = {
+            _id: id,
+            _type: 'user',
+            userName: name,
+            image: picture,
+          }
+          client.createIfNotExists(doc)
+            .then(() => {
+              navigate('/', { replace: true })
+            })
+        })
+        .catch((err) => console.log(err));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+      }
+    },
+    [ user, profile ]
+  );
 
   return (
     <div className='flex justify-start items-center flex-col h-screen'>
@@ -46,22 +72,13 @@ const Login = () => {
             <img src={logo} width='130px' alt='logo'/>
           </div>
           <div className='shadow-2xl'>
-            <GoogleLogin
-              clientId={config.google.token}
-              render={(renderProps) => (
-                <button 
-                  type='button'
-                  className='bg-mainColor flex justify-center items-center p-3 rounded-lg cursor-pointer outline-none'
-                  onClick={renderProps.onClick}
-                  disabled={renderProps.disabled}
-                >
-                  <FcGoogle className='mr-4'/> Sign in with Google
-                </button>
-              )}
-              onSuccess={responseGoogle}
-              onFailure={responseGoogle}
-              cookiePolicy='single_host_origin'
-            />
+            <button 
+              type='button'
+              className='bg-mainColor flex justify-center items-center p-3 rounded-lg cursor-pointer outline-none'
+              onClick={login}
+            >
+              <FcGoogle className='mr-4'/> Sign in with Google
+            </button>
           </div>
         </div>
 

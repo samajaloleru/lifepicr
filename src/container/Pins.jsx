@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import { Link, Route, Routes } from 'react-router-dom';
+import { Route, Routes } from 'react-router-dom';
 
 import { Navbar, Feed, PinDetail, CreatePin, Search } from '../components';
 

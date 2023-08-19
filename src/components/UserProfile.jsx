@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { GoogleLogout } from 'react-google-login'
+import { googleLogout } from '@react-oauth/google';
 import { AiOutlineLogout } from 'react-icons/ai';
 
 
@@ -9,7 +9,6 @@ import { client } from '../utils/client';
 import MasonryLayout from './MasonryLayout';
 import Spinner from './Spinner';
 
-import {config} from '../utils/config';
 
 const randomImage = 'https://source.unsplash.com/1600x900/?nature,photography,technology';
 
@@ -53,6 +52,7 @@ const UserProfile = () => {
   
 
   const logout = () => {
+    googleLogout();
     localStorage.clear();
 
     navigate('/login');
@@ -83,21 +83,14 @@ const UserProfile = () => {
             </h1>
             <div className='absolute top-0 z-1 right-0 p-2'>
               {userId === user._id && (
-                <GoogleLogout 
-                clientId={config.google.token}
-                render={(renderProps) => (
-                  <button 
-                    type='button'
-                    className='bg-default p-2 rounded-full cursor-pointer outline-none shadow-md'
-                    onClick={renderProps.onClick}
-                    disabled={renderProps.disabled}
-                  >
-                    <AiOutlineLogout color='red' fontSize={21}/>
-                  </button>
-                )}
-                onLogoutSuccess={logout}
-                cookiePolicy='single_host_origin'
-                />
+                <button 
+                  type='button'
+                  className='bg-default p-2 rounded-full cursor-pointer outline-none shadow-md'
+                  onClick={logout}
+                >
+                  <AiOutlineLogout color='red' fontSize={21}/>
+                </button>
+                    
               )}
             </div>
           </div>
