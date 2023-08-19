@@ -1,7 +1,7 @@
 import React, {useState, useRef, useEffect} from 'react';
 import {HiMenu} from 'react-icons/hi';
 import {AiFillCloseCircle} from 'react-icons/ai';
-import { Link, Route, Routes, useNavigate } from 'react-router-dom';
+import { Link, Route, Routes } from 'react-router-dom';
 
 import { userQuery } from '../utils/data';
 import { client } from '../utils/client';
@@ -10,28 +10,22 @@ import Pins from './Pins';
 import {Sidebar, UserProfile} from '../components/index';
 
 import logo from '../assets/logo.png';
-import { fetchUser } from '../utils/fetchUser';
 
 const Home = () => {
   const scrollRef = useRef(null)
   const [user, setUser] = useState(null);
   const [toggleSidebar, setToggleSidebar] = useState(false);
-  const navigate = useNavigate();
 
   const userInfo = fetchUser();
 
 
   useEffect(() => {
-    if (!userInfo) {
-      navigate('/login', { replace: true })
-    } else {
-      const query = userQuery(userInfo?.id);
-      
-      client.fetch(query)
-      .then((data) => {
-        setUser(data[0]);
-      })
-    }
+    const query = userQuery(userInfo?.id);
+    
+    client.fetch(query)
+    .then((data) => {
+      setUser(data[0]);
+    })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo?.id]);
 

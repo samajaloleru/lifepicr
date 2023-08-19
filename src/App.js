@@ -1,19 +1,21 @@
-import React from 'react'
-import { Routes, Route } from 'react-router-dom';
-
-import { gapi } from "gapi-script";
+import React, {useEffect} from 'react'
+import { Routes, Route, useNavigate } from 'react-router-dom';
 
 import { config } from './utils/config';
 import Login from './components/Login';
 import Home from './container/Home';
+import { fetchUser } from './utils/fetchUser';
 
 const App = () => {
-  gapi.load("client:auth2", () => {
-    gapi.client.init({
-      clientId: config.google.token,
-      plugin_name: "chat",
-    });
-  });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = fetchUser();
+    
+    if(!user) navigate('/login')
+  }, [])
+  
+  
   return (
     <Routes>
         <Route path="login" element={<Login/>} />

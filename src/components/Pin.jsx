@@ -14,7 +14,7 @@ const Pin = ({pin: { postedBy, image, _id, destination, save }}) => {
   const navigate = useNavigate();
   const user = fetchUser();
   
-  const alreadySaved = !!(save?.filter((item) => item.postedBy._id === user.id)?.length);
+  const alreadySaved = !!(save?.filter((item) => item.postedBy._id === user?.id)?.length);
 
   const savePin = (id) => {
     if(! alreadySaved)  {
@@ -93,7 +93,7 @@ const Pin = ({pin: { postedBy, image, _id, destination, save }}) => {
                   { destination.length > 15 ? `${destination.slice(0, 15)}...` : destination}
                 </a>
               )}
-              {postedBy?._id === user.id && (
+              {postedBy?._id === user?.id && (
                 <button
                   type='button'
                   className='bg-default p-2 text-dark opacity-70 hover:opacity-100 font-bold px-5 py-1 text-base rounded-3xl hover:shadow-md outline-none'
