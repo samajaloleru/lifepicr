@@ -46,13 +46,13 @@ const Login = () => {
           client.createIfNotExists(doc)
             .then(() => {
               navigate('/', { replace: true })
+              // eslint-disable-next-line react-hooks/exhaustive-deps
             })
         })
         .catch((err) => console.log(err));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
       }
     },
-    [ user, profile ]
+    [ user, profile, navigate ]
   );
 
   return (
